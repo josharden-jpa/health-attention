@@ -1,0 +1,96 @@
+---
+title: "Attention vs. Money: Health in Public Opinion, Party Platforms, and the Federal Budget"
+author: "Josh"
+format: pdf
+execute:
+  warning: false
+  message: false
+---
+
+```{r}
+#| include: false
+source("R/01_load_and_analyze.R")
+```
+
+## Question
+
+How much attention does health get in public opinion, in party platforms, and in the federal budget, and how do those compare over time? I use four U.S. Policy Agendas Project datasets: Democratic and Republican platforms, Gallup's Most Important Problem, and Budget Authority (Jones et al. 2025). Platforms and Gallup measure *attention*, not positions. The budget is a common baseline for what government is committed to.
+
+## Figure 1: Four arenas
+
+```{r}
+#| echo: false
+#| fig-height: 4
+fig1
+```
+
+Series use different denominators, so compare timing and shape, not height. Gallup 1988 is set to missing: only five topics were reported that year, so the zero for health is probably a thin-data artifact.
+
+## Figure 2: Democrats vs. Republicans
+
+```{r}
+#| echo: false
+#| fig-height: 4
+fig2
+```
+
+Republicans adopted no new platform in 2020, so that line breaks.
+
+## Figure 3: Platforms vs. the budget
+
+```{r}
+#| echo: false
+#| fig-height: 4
+fig3
+fig3_alt
+```
+
+With Medicare in the budget (first plot), platform attention falls below budget share after the late 1960s, when Medicare launched. With Medicare out (second plot), the ratio hovers around 1. The divergence is largely a Medicare story. Sentences naming Medicare are only about 7% of Health sentences, so removing them barely changes the platform side.
+
+```{r}
+#| echo: false
+#| fig-height: 5
+fig3_compare
+```
+
+## Figure 4: Medicare talk vs. Medicare spending
+
+```{r}
+#| echo: false
+#| fig-height: 5
+fig4
+```
+
+Medicare's budget share rises steadily from 1966. Platform mentions of Medicare stay small, mostly under 1.5% until 2024, and rise later. Both parties peak together in 1996, but the text shows them arguing opposite positions: equal attention, opposite stances. 1992 has zero mentions despite normal Health volume; the sentences I read framed health as system-wide reform.
+
+## Figure 5: Party gap
+
+```{r}
+#| echo: false
+#| fig-height: 4
+fig5
+```
+
+```{r}
+#| echo: false
+both |>
+  filter(!majortopic %in% c(-555, 0)) |>
+  group_by(party, year) |>
+  summarise(total = n(), health = sum(majortopic == 3),
+            share = round(health / total, 3), .groups = "drop") |>
+  filter(year %in% c(1964, 1984, 2000, 2008, 2012, 2016, 2024)) |>
+  arrange(year, party) |>
+  knitr::kable()
+```
+
+On average the parties give health about equal space (mean gap 0.4 points; Democrats higher in 11 of 19 years), but seven years have intervals excluding zero. The counts show different sources: 2000 and 2008 are real emphasis gaps (Republicans wrote more Health sentences), while 2016 is mostly a length gap (similar Health counts, longer Republican platform).
+
+## Caveats
+
+- Shares depend on platform length, and shares from different sources have different denominators.
+- Intervals in Figure 5 treat sentences as independent, so they are too narrow. Small counts (Republican 1964 and 2024, Democratic 1988) are unreliable.
+- Medicare search is a text-match floor; it misses indirect references.
+- Budget data ends in 2017. Budget authority is net of offsetting receipts.
+- The Medicare budget definition (550 vs. 550+571) changes Figure 3 a lot.
+
+Jones, Baumgartner, Theriault, Epp, Khandekar & Little. 2025. *Policy Agendas Project: Codebook.*
